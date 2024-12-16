@@ -54,5 +54,28 @@ class PredictWithDino:
         print(end_time - start_time)
         return df
 
-    def preview(self, loader, text):
-        return
+    def preview(self, image, text, box_threshold, text_threshold, data_loader):
+        height = data_loader.height
+        width = data_loader.width
+        channels = data_loader.channels
+        data = []
+
+        inputs = self.processor(images=image, text=text, return_tensors="pt").to(self.device)
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+
+        results_test = self.processor.post_process_grounded_object_detection(
+            outputs,
+            inputs.input_ids,
+            box_threshold=box_threshold,
+            text_threshold=text_threshold,
+            target_sizes=[(height, width)]
+        )
+        results_test = results_test[0]
+        if len(results_test["scores"]) != 0:
+            for j in range(len(results_test["scores"])):
+                x_min, y_min, x_max, y_max = map(int, results_test["boxes"].cpu().numpy()[j])
+                label = results_test["labels"][j].replace("[SEP]", "").replace(".", "").strip()
+                data.append([label, results_test["scores"].cpu().numpy()[j], x_min, y_min, x_max, y_max])
+            data = pd.DataFrame(data, columns=["label", "score", "x_min", "y_min", "x_max", "y_max"])
+        return data

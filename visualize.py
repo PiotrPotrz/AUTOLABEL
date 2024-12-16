@@ -1,10 +1,11 @@
 import numpy as np
 import cv2
 import pandas as pd
-from tkinter import Tk, Label
+from tkinter import Tk, Label, Toplevel
 from PIL import Image, ImageTk
 from data import DataLoader
 import tkinter as tk
+
 
 class Visualize:
     def __init__(self, loader: DataLoader):
@@ -65,7 +66,9 @@ class Visualize:
             # Odczytanie wartości zmiennej powiązanej z suwakiem
             # name_frame = self.dataframe['name']
             current_value = scale_var.get()
-            label.config(text=f"IMAGE NAME: {name_frame[current_value]}")
+            # label.config(text=f"IMAGE NAME: {name_frame[current_value]}") # tu błąd możliwy
+            label.config(text=f"IMAGE NAME: {self.names[current_value]}")  # tu błąd możliwy
+
             global tk_image
             tk_image = ImageTk.PhotoImage(pil_images[current_value])
             label_photo.config(image=tk_image)
@@ -84,7 +87,7 @@ class Visualize:
 
         name_frame = self.dataframe['name']
 
-        root = Tk()
+        root = Toplevel()
         root.title("RESULTS")
 
         scale_var = tk.IntVar()
