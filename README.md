@@ -1,3 +1,3 @@
 <h1>AUTOLABEL</h1>
 
-To quickstart use QUICK.ipnb.
+To quickstart use QUICK.ipynb.
